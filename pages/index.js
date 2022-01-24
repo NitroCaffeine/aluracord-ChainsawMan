@@ -12,7 +12,6 @@ function Titulo(props){
             <Tag>{props.children}</Tag>
             <style jsx>{`
                 ${Tag} {
-                    backgroundColor:${appConfig.theme.colors.neutrals['700']};;
                     color:${appConfig.theme.colors.neutrals['000']};
                     font-size:24px;
                     font-weight:600;
@@ -63,6 +62,7 @@ export default function PaginaInicial() {
             borderRadius: '30px', padding: '20px', margin: '16px',
             boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
             backgroundColor: appConfig.theme.colors.neutrals[700],
+
           }}
         >
           {/* Formulário */}
@@ -76,11 +76,11 @@ export default function PaginaInicial() {
             }}
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '20px', backgroundColor:appConfig.theme.colors.neutrals[700]
+              width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '20px'
             }}
           >
             <Titulo tag="h2">Boas vindas de volta!</Titulo>
-            <Text variant="body3" styleSheet={{ fontFamily:'Sans-serif', marginBottom: '32px', color: appConfig.theme.colors.neutrals[300], backgroundColor:appConfig.theme.colors.neutrals[700],}}>
+            <Text variant="body3" styleSheet={{ fontFamily:'Sans-serif', marginBottom: '32px', color: appConfig.theme.colors.neutrals[200]}}>
               {appConfig.name} ({username})
             </Text>
 
@@ -151,7 +151,7 @@ export default function PaginaInicial() {
               styleSheet={{
                 fontFamily:'Monospace',
                 color: appConfig.theme.colors.neutrals[200],
-                backgroundColor: appConfig.theme.colors.neutrals[900],
+                backgroundColor: appConfig.theme.colors.neutrals[800],
                 padding: '3px 10px',
                 borderRadius: '1000px'
               }}
