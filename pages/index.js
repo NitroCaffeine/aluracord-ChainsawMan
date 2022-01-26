@@ -4,6 +4,7 @@ import {useRouter} from 'next/router';
 import appConfig from '../config.json';
 
 
+
 function Titulo(props){
     console.log(props.children);
     const Tag=props.tag || "h1";
@@ -38,6 +39,8 @@ function Titulo(props){
 export default function PaginaInicial() {
   const [username,setUsername]=React.useState('NitroCaffeine');
   const roteamento=useRouter();
+  const chainsaw_gif='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fart.ngfiles.com%2Fimages%2F1313000%2F1313953_eltrainanim_revvin-up-chainsaw-man.gif%3Ff1592225446&f=1&nofb=1';
+
   
   return (
     <>
@@ -45,7 +48,7 @@ export default function PaginaInicial() {
         styleSheet={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           backgroundColor: appConfig.theme.colors.neutrals['000'],
-          backgroundImage: 'url(https://wallpapercave.com/dwp1x/wp4518879.jpg)',
+          backgroundImage: `url(${chainsaw_gif})`,
           backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
         }}
       >
@@ -62,6 +65,7 @@ export default function PaginaInicial() {
             borderRadius: '30px', padding: '20px', margin: '16px',
             boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
             backgroundColor: appConfig.theme.colors.neutrals[700],
+            boxShadow: '10px 05px 40px 10px #7CF292',
 
           }}
         >
@@ -144,7 +148,7 @@ export default function PaginaInicial() {
                 borderRadius: '50%',
                 marginBottom: '16px',
               }}
-              src={`https://github.com/${username}.png`}
+                src={`https://github.com/${username}.png`}
             />
             <Text
               variant="body4"
