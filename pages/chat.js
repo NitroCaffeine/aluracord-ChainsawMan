@@ -1,25 +1,58 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { createClient } from '@supabase/supabase-js';
+
+const SupaBase_Anon_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMxNDI3OCwiZXhwIjoxOTU4ODkwMjc4fQ.GBtwkxlZj3_a3PsLS5XaZP9xSM5R_9lP98SNjegpexY";
+const SupaBase_url="https://jpcflmjsxjijjavnzyom.supabase.co";
+
+const SupaBaseClient=createClient(SupaBase_url,SupaBase_Anon_key)
+
 
 
 export default function ChatPage() {
     const [mensagem, setMensagem] = React.useState('');
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
     const chainsaw='https://i.redd.it/8v1olnnsbxo51.jpg';
-    //const chainsaw_gif='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fart.ngfiles.com%2Fimages%2F1313000%2F1313953_eltrainanim_revvin-up-chainsaw-man.gif%3Ff1592225446&f=1&nofb=1';
+
+    React.useEffect(()=>{
+        const dataSupaBase=SupaBaseClient
+        .from('Mensagens')
+        .select('*')
+        .then(async({data})=>{
+            await console.log("Dados da consulta",data);
+            setListaDeMensagens(data);
+
+    });
+
+    },[]);
 
     function handleNovaMensagem(novaMensagem) {
+        console.log("Teste");
         const mensagem = {
-            id: listaDeMensagens.length + 1,
+            //id: listaDeMensagens.length + 1,
             de: 'NitroCaffeine',
             texto: novaMensagem,
         };
 
-        setListaDeMensagens([
-            mensagem,
-            ...listaDeMensagens,
-        ]);
+        SupaBaseClient
+            .from('Mensagens')
+            .insert([mensagem])
+            .order('id',{ascending:false})
+            .then(({data})=>{
+                //console.log(response);
+                setListaDeMensagens([
+                    data[0],
+                    ...listaDeMensagens,
+                ])
+                
+            });
+
+
+        //setListaDeMensagens([
+        //    mensagem,
+        //    ...listaDeMensagens,
+        //]);
         setMensagem('');
     }
 
@@ -75,7 +108,7 @@ export default function ChatPage() {
                         styleSheet={{
                             display: 'flex',
                             alignItems: 'center',
-                            boxShadow: '10px 05px 40px 10px #7CF292',
+                            //boxShadow: '10px 10px 40px 10px #7CF292',
                         }}
                     >
                         <TextField
@@ -97,9 +130,10 @@ export default function ChatPage() {
                                 border: '0',
                                 resize: 'none',
                                 borderRadius: '5px',
-                                padding: '6px 8px',
+                                padding: '10px',
                                 backgroundColor: appConfig.theme.colors.neutrals[800],
-                                marginRight: '12px',
+                                marginBottom:'1px',
+                                //marginRight: '1px',
                                 color: appConfig.theme.colors.neutrals[200],
                             }}
                         />
@@ -176,7 +210,7 @@ function MessageList(props) {
                                     display: 'inline-block',
                                     marginRight: '8px',
                                 }}
-                                src={`https://github.com/NitroCaffeine.png`}
+                                src={`https://github.com/${mensagem.de}.png`}
                             />
                             <Text tag="strong">
                                 {mensagem.de}
