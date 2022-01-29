@@ -77,7 +77,7 @@ export default function ChatPage() {
         <Box
             styleSheet={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                backgroundColor: appConfig.theme.colors.neutrals['000'],
+                backgroundColor: appConfig.theme.colors.neutrals['700'],
                 backgroundImage: `url(${chainsaw})`,
                 backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
                 color: appConfig.theme.colors.neutrals['000']
