@@ -1,59 +1,76 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import {useRouter} from 'next/router';
 import { createClient } from '@supabase/supabase-js';
+import {ButtonSendSticker} from '../src/components/ButtonSendSticker';
 
 const SupaBase_Anon_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMxNDI3OCwiZXhwIjoxOTU4ODkwMjc4fQ.GBtwkxlZj3_a3PsLS5XaZP9xSM5R_9lP98SNjegpexY";
 const SupaBase_url="https://jpcflmjsxjijjavnzyom.supabase.co";
 
 const SupaBaseClient=createClient(SupaBase_url,SupaBase_Anon_key)
 
+function ListennerMessageRealTime(addMessage){
+    return SupaBaseClient
+    .from("Mensagens")
+    .on('INSERT', (response)=>{
+        addMessage(response.new);
 
+    }).subscribe();
+}
 
 export default function ChatPage() {
-    const [mensagem, setMensagem] = React.useState('');
+    const roteamento=useRouter();
+    const userLogged=roteamento.query.username;
+    const [mensagem, setMensagem] = React.useState("");
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
     const chainsaw='https://i.redd.it/8v1olnnsbxo51.jpg';
 
+
     React.useEffect(()=>{
-        const dataSupaBase=SupaBaseClient
+        SupaBaseClient
         .from('Mensagens')
         .select('*')
+        .order('id', { ascending: false })
         .then(async({data})=>{
             await console.log("Dados da consulta",data);
             setListaDeMensagens(data);
-
+    
     });
 
-    },[]);
+    const subscription = ListennerMessageRealTime((novaMensagem) => {
+        console.log('Nova mensagem:', novaMensagem);
+        console.log('listaDeMensagens:', listaDeMensagens);
+       
+        setListaDeMensagens((valorAtualDaLista) => {
+          console.log('valorAtualDaLista:', valorAtualDaLista);
+          return [
+            novaMensagem,
+            ...valorAtualDaLista,
+          ]
+        });
+      });
+  
+      return () => {
+        subscription.unsubscribe();
+      }
+    }, []);
 
     function handleNovaMensagem(novaMensagem) {
-        console.log("Teste");
         const mensagem = {
-            //id: listaDeMensagens.length + 1,
-            de: 'NitroCaffeine',
+            de: userLogged,
             texto: novaMensagem,
         };
 
         SupaBaseClient
             .from('Mensagens')
             .insert([mensagem])
-            .order('id',{ascending:false})
             .then(({data})=>{
-                //console.log(response);
-                setListaDeMensagens([
-                    data[0],
-                    ...listaDeMensagens,
-                ])
+                console.log("Criando mensagem",data);
                 
             });
 
-
-        //setListaDeMensagens([
-        //    mensagem,
-        //    ...listaDeMensagens,
-        //]);
-        setMensagem('');
+        setMensagem("");
     }
 
     return (
@@ -137,6 +154,13 @@ export default function ChatPage() {
                                 color: appConfig.theme.colors.neutrals[200],
                             }}
                         />
+                        <ButtonSendSticker
+                        onStickerClick={(sticker)=>{
+                            //console.log('Salva esse sticker');
+                            handleNovaMensagem(":sticker:" + sticker);
+
+                        }}
+                        />
                     </Box>
                 </Box>
             </Box>
@@ -146,6 +170,7 @@ export default function ChatPage() {
 
 
 function Header() {
+    const roteamento=useRouter();
     return (
         <>
             <Box styleSheet={{ width: '100%', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} >
@@ -153,16 +178,18 @@ function Header() {
                     Chat
                 </Text>
                 <Button
-                    //variant='tertiary'
-                    //colorVariant='neutral'
                     label='Logout'
+                    onClick={(event)=>{
+                        event.preventDefault();
+                        roteamento.push("/");
+
+                    }}
                     buttonColors={{
                         contrastColor: appConfig.theme.colors.neutrals['000'],
                         mainColor: appConfig.theme.colors.primary[500],
                         mainColorLight: appConfig.theme.colors.primary[400],
                         mainColorStrong: appConfig.theme.colors.primary['600'],
                       }}
-                    //href="/"
                 />
             </Box>
         </>
@@ -208,17 +235,20 @@ function MessageList(props) {
                                     height: '20px',
                                     borderRadius: '50%',
                                     display: 'inline-block',
-                                    marginRight: '8px',
                                 }}
                                 src={`https://github.com/${mensagem.de}.png`}
                             />
-                            <Text tag="strong">
-                                {mensagem.de}
+                            <Text tag="strong"
+                                
+                             >   
+                             {mensagem.de}
                             </Text>
+                            
                             <Text
                                 styleSheet={{
                                     fontSize: '10px',
                                     marginLeft: '8px',
+                                    marginTop:'2px',
                                     color: appConfig.theme.colors.neutrals[300],
                                 }}
                                 tag="span"
@@ -226,7 +256,19 @@ function MessageList(props) {
                                 {(new Date().toLocaleDateString())}
                             </Text>
                         </Box>
-                        {mensagem.texto}
+                        
+                        {/* Condicional: {mensagem.texto.startsWith(':sticker:').toString()} */}
+                        {mensagem.texto.startsWith(":sticker:")
+                        ? (<Image src={mensagem.texto.replace(":sticker:", "")}
+                                styleSheet={{
+                                    maxWidth: "20%",
+                                }} 
+                            />
+                        )
+                        : (
+                            mensagem.texto
+                        )}
+                       
                     </Text>
                 );
             })}

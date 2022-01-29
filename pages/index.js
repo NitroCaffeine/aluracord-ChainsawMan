@@ -37,7 +37,7 @@ function Titulo(props){
 //export default HomePage
 
 export default function PaginaInicial() {
-  const [username,setUsername]=React.useState('NitroCaffeine');
+  const [username,setUsername]=React.useState('');
   const roteamento=useRouter();
   const chainsaw_gif='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fart.ngfiles.com%2Fimages%2F1313000%2F1313953_eltrainanim_revvin-up-chainsaw-man.gif%3Ff1592225446&f=1&nofb=1';
 
@@ -47,7 +47,7 @@ export default function PaginaInicial() {
       <Box
         styleSheet={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backgroundColor: appConfig.theme.colors.neutrals['000'],
+          backgroundColor: appConfig.theme.colors.neutrals['700-1'],
           backgroundImage: `url(${chainsaw_gif})`,
           backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
         }}
@@ -75,9 +75,12 @@ export default function PaginaInicial() {
             onSubmit={ function (event) {
               event.preventDefault();
               console.log('Houve uma submissão');
-              roteamento.push('/chat')
+              if (username.length <= 2) {
+                roteamento.push(`/404`);
+              }else{
+                roteamento.push(`/chat?username=${username}`);
 
-            }}
+            }}}
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '20px'
@@ -148,7 +151,8 @@ export default function PaginaInicial() {
                 borderRadius: '50%',
                 marginBottom: '16px',
               }}
-                src={`https://github.com/${username}.png`}
+          
+                src={username.length > 2 && `https://github.com/${username}.png` || `https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.shopify.com%2Fs%2Ffiles%2F1%2F0353%2F8839%2F1563%2Fproducts%2F2158591-1_1024x1024%402x.jpg%3Fv%3D1619074086&f=1&nofb=1` }
             />
             <Text
               variant="body4"
